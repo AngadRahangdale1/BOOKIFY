@@ -15,7 +15,6 @@ import Profile from './pages/Profile'
 // components
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
-import Orders from './components/Orders'
 
 function ProtectedRoute({ children }) {
   const { isLoggedIn, authLoading } = useFirebase()
@@ -46,7 +45,6 @@ function App() {
         <Route path='/list' element={<ProtectedRoute><List /></ProtectedRoute>} />
         <Route path='/book/browse/:id' element={<ProtectedRoute><Detail/></ProtectedRoute>} />
         <Route path='/book/read/:id' element={<ProtectedRoute><Reader/></ProtectedRoute>} />
-        <Route path='/book/orders' element={<ProtectedRoute><Orders /></ProtectedRoute>} />
         <Route path='/profile' element={<ProtectedRoute><Profile /></ProtectedRoute>} />
       </Routes>
 

@@ -60,7 +60,6 @@ function Navbar() {
             {isLoggedIn ? (
               <div className="flex items-center space-x-6 border-l border-emerald-100 pl-6">
                 <NavLink to='/list' className={navLinkStyles}>My List</NavLink>
-                <NavLink to='/book/orders' className={navLinkStyles}>Orders</NavLink>
                 {/* Avatar */}
                 <Link
                   to="/profile"
@@ -104,7 +103,6 @@ function Navbar() {
               {isLoggedIn ? (
                 <>
                   <NavLink to='/list' className={navLinkStyles} onClick={() => setMobileMenuOpen(false)}>My List</NavLink>
-                  <NavLink to='/book/orders' className={navLinkStyles} onClick={() => setMobileMenuOpen(false)}>Orders</NavLink>
                   <NavLink to='/profile' className={navLinkStyles} onClick={() => setMobileMenuOpen(false)}>Profile</NavLink>
 
                   <button
