@@ -167,7 +167,6 @@ function Home() {
                                 <p className="mt-1 inline-block rounded-full border border-cyan-100 bg-cyan-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-cyan-700">
                                     {book.genre || "General"}
                                 </p>
-                                <p className="mt-1 text-base font-bold text-emerald-700">Rs. {book.price}</p>
 
                                 <button
                                     onClick={() => click(book)}

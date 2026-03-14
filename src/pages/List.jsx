@@ -73,7 +73,6 @@ function List() {
   const navigate = useNavigate();
   const [name, setName] = useState("");
   const [ISBNno, setISBNno] = useState("");
-  const [price, setPrice] = useState("");
   const [genre, setGenre] = useState("");
   const [previewText, setPreviewText] = useState("");
   const [file, setFile] = useState(null);
@@ -87,7 +86,6 @@ function List() {
   const [editingBookId, setEditingBookId] = useState("");
   const [editName, setEditName] = useState("");
   const [editISBNno, setEditISBNno] = useState("");
-  const [editPrice, setEditPrice] = useState("");
   const [editGenre, setEditGenre] = useState("");
   const [editPreviewText, setEditPreviewText] = useState("");
   const [editCoverFile, setEditCoverFile] = useState(null);
@@ -135,16 +133,13 @@ function List() {
   };
 
   // Basic client-side validation for form fields
-  const validateListing = ({ name, ISBNno, price, genre, file, previewText }) => {
+  const validateListing = ({ name, ISBNno, genre, file, previewText }) => {
     const fieldErrors = {};
     if (!name.trim() || name.trim().length < 3) {
       fieldErrors.name = "Name must be at least 3 characters.";
     }
     if (!ISBNno.trim() || !/^\d{10}(\d{3})?$/.test(ISBNno.trim())) {
       fieldErrors.ISBNno = "ISBN must be 10 or 13 digits.";
-    }
-    if (!price || Number.isNaN(Number(price)) || Number(price) <= 0) {
-      fieldErrors.price = "Price must be a positive number.";
     }
     if (!genre) {
       fieldErrors.genre = "Please select a genre.";
@@ -169,7 +164,7 @@ function List() {
     e.preventDefault();
     setSubmitError("");
 
-    const formErrors = validateListing({ name, ISBNno, price, genre, file, previewText });
+    const formErrors = validateListing({ name, ISBNno, genre, file, previewText });
     if (Object.keys(formErrors).length > 0) {
       setErrors(formErrors);
       return;
@@ -187,7 +182,7 @@ function List() {
       const docRef = await firebase.handleCreateNewListing(
         name.trim(),
         ISBNno.trim(),
-        Number(price),
+        0,
         imageUrl,
         genre,
         previewPages,
@@ -239,7 +234,6 @@ function List() {
     }
     setName("");
     setISBNno("");
-    setPrice("");
     setGenre("");
     setPreviewText("");
     setFile(null);
@@ -252,7 +246,6 @@ function List() {
     setEditingBookId(book.id);
     setEditName(book.name || "");
     setEditISBNno(book.ISBNno || "");
-    setEditPrice(String(book.price || ""));
     setEditGenre(book.genre || "");
     setEditPreviewText(Array.isArray(book.previewPages) ? book.previewPages.join("\n---\n") : "");
     setEditCoverFile(null);
@@ -262,7 +255,6 @@ function List() {
     setEditingBookId("");
     setEditName("");
     setEditISBNno("");
-    setEditPrice("");
     setEditGenre("");
     setEditPreviewText("");
     setEditCoverFile(null);
@@ -274,7 +266,6 @@ function List() {
       const updatePayload = {
         name: editName,
         ISBNno: editISBNno,
-        price: Number(editPrice),
         genre: editGenre,
         previewPages: parsePreviewPages(editPreviewText, MAX_PREVIEW_PAGES),
       };
@@ -332,7 +323,7 @@ function List() {
             Craft a trusted listing with complete details, accurate pricing, and a clean cover shot.
           </p>
 
-          <div className="mt-8 grid gap-3 sm:grid-cols-3">
+          <div className="mt-8 grid gap-3 sm:grid-cols-2">
             <div className="rounded-2xl border border-slate-700 bg-slate-800/70 p-4">
               <p className="text-xs uppercase tracking-[0.18em] text-slate-400">Status</p>
               <p className="mt-2 text-lg font-semibold text-cyan-200">
@@ -343,12 +334,6 @@ function List() {
               <p className="text-xs uppercase tracking-[0.18em] text-slate-400">ISBN</p>
               <p className="mt-2 truncate text-lg font-semibold text-white">
                 {ISBNno || "Not entered"}
-              </p>
-            </div>
-            <div className="rounded-2xl border border-slate-700 bg-slate-800/70 p-4">
-              <p className="text-xs uppercase tracking-[0.18em] text-slate-400">Price</p>
-              <p className="mt-2 text-lg font-semibold text-amber-300">
-                {price ? `INR ${price}` : "Pending"}
               </p>
             </div>
           </div>
@@ -414,22 +399,6 @@ function List() {
                 inputMode="numeric"
                 aria-invalid={Boolean(errors.ISBNno)}
                 aria-describedby={errors.ISBNno ? "isbnNo-error" : undefined}
-                className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-slate-900 shadow-sm outline-none transition-all focus:border-cyan-500 focus:ring-4 focus:ring-cyan-100"
-              />
-            </FormField>
-
-            <FormField label="Price (INR)" id="price" error={errors.price}>
-              <input
-                type="number"
-                id="price"
-                name="price"
-                placeholder="499"
-                min="1"
-                value={price}
-                onChange={(e) => setPrice(e.target.value)}
-                disabled={uploading}
-                aria-invalid={Boolean(errors.price)}
-                aria-describedby={errors.price ? "price-error" : undefined}
                 className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-slate-900 shadow-sm outline-none transition-all focus:border-cyan-500 focus:ring-4 focus:ring-cyan-100"
               />
             </FormField>
@@ -560,7 +529,6 @@ function List() {
                 <h4 className="mt-3 text-lg font-semibold text-white">{book.name}</h4>
                 <p className="text-xs text-slate-300">ISBN: {book.ISBNno}</p>
                 <p className="text-xs text-slate-300">Genre: {book.genre || "General"}</p>
-                <p className="text-sm font-semibold text-amber-300">Rs. {book.price}</p>
 
                 <div className="mt-3 flex gap-2">
                   <button
@@ -601,14 +569,6 @@ function List() {
                       value={editISBNno}
                       onChange={(e) => setEditISBNno(e.target.value)}
                       placeholder="ISBN"
-                      className="w-full rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-white"
-                    />
-                    <input
-                      type="number"
-                      min="1"
-                      value={editPrice}
-                      onChange={(e) => setEditPrice(e.target.value)}
-                      placeholder="Price"
                       className="w-full rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-white"
                     />
                     <select
